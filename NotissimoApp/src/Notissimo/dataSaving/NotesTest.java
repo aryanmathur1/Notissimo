@@ -46,7 +46,7 @@ public class NotesTest {
 
             // Save data
             writeData(myList);
-        } while (!input.equals("cancel"));
+        } while (!input.equals(UtilityValues.END_COMMAND));
 
         in.close();
     }
