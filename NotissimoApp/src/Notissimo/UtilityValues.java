@@ -1,4 +1,6 @@
-package Notissimo;/*
+package Notissimo;
+
+/*
  * THESE ARE ALL THE CONSTANTS IN OUR PROJECT
  */
 

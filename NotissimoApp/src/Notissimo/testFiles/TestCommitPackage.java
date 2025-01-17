@@ -1,6 +1,6 @@
 package Notissimo.testFiles;
 
-import Notissimo.UtilityValues;
+import Notissimo.*;
 
 public class TestCommitPackage {
 
