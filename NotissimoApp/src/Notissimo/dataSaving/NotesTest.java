@@ -21,6 +21,9 @@ public class NotesTest {
         // Add an item
         Scanner in = new Scanner(System.in);
 
+        // for reference
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
         String input;
 
         do {
@@ -37,8 +40,16 @@ public class NotesTest {
 
                 System.out.print("Enter note: ");
                 notesList.add(in.nextLine());
-                System.out.print("Enter month: ");
-                monthList.add(in.nextLine());
+
+                int month;
+
+                do {
+                    System.out.print("Enter month # 1-12: ");
+                    String monthStr = in.nextLine();
+                    month = Integer.parseInt(monthStr);
+                } while (!(month >= 1 && month <= 12));
+
+                monthList.add(months[month - 1]);
                 System.out.print("Enter day: ");
                 dayList.add(in.nextLine());
                 System.out.print("Enter year: ");
