@@ -11,5 +11,6 @@ public class UtilityValues {
     public static final String ADD_COMMAND = "add";
     public static final String REMOVE_COMMAND = "remove";
     public static final String END_COMMAND = "end";
+    public static final String RESET_COMMAND = "reset";
 
 }
