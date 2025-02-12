@@ -12,12 +12,14 @@ class Task {
     private String name;
     private String description;
     private LocalDateTime dueDate;
+    private boolean isRepeating;
 
-    public Task(String name, String description, LocalDateTime dueDate) {
+    public Task(String name, String description, LocalDateTime dueDate, boolean isRepeating) {
         this.id = idCounter++;
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
+        this.isRepeating = isRepeating;
     }
 
     public int getId() {
@@ -48,11 +50,19 @@ class Task {
         this.dueDate = dueDate;
     }
 
+    public boolean isRepeating() {
+        return isRepeating;
+    }
+
+    public void setRepeating(boolean repeating) {
+        this.isRepeating = repeating;
+    }
+
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a");
         return "Task ID: " + id + ", Name: " + name + ", Description: " + description
-                + ", Due Date: " + dueDate.format(formatter);
+                + ", Due Date: " + dueDate.format(formatter) + ", Repeating: " + (isRepeating ? "Yes" : "No");
     }
 }
 
@@ -61,7 +71,7 @@ public class Tasks {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        Thread alertThread = new Thread(Tasks::checkAlerts);  // Background thread for alerts
+        Thread alertThread = new Thread(Tasks::checkAlerts);
         alertThread.setDaemon(true);
         alertThread.start();
 
@@ -73,27 +83,13 @@ public class Tasks {
             System.out.println("4. Delete Task");
             System.out.println("5. Exit");
 
-            System.out.print("Choose an option: ");
-            int choice = Integer.parseInt(scanner.nextLine());
-
+            int choice = getValidIntegerInput("Choose an option (1-5): ");
             switch (choice) {
-                case 1 -> {
-                    createTask();
-                    displaySortedTasks();
-                }
+                case 1 -> { createTask(); displaySortedTasks(); }
                 case 2 -> displaySortedTasks();
-                case 3 -> {
-                    editTask();
-                    displaySortedTasks();
-                }
-                case 4 -> {
-                    deleteTask();
-                    displaySortedTasks();
-                }
-                case 5 -> {
-                    System.out.println("Exiting Task Management System...");
-                    return;
-                }
+                case 3 -> { editTask(); displaySortedTasks(); }
+                case 4 -> { deleteTask(); displaySortedTasks(); }
+                case 5 -> { System.out.println("Exiting Task Management System..."); return; }
                 default -> System.out.println("Invalid choice, please try again.");
             }
         }
@@ -106,17 +102,34 @@ public class Tasks {
         System.out.print("Enter task description: ");
         String description = scanner.nextLine();
 
-        System.out.print("Enter due date and time (yyyy-MM-dd HH:mm): ");
-        String dueDateString = scanner.nextLine();
         LocalDateTime dueDate;
-        try {
-            dueDate = LocalDateTime.parse(dueDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        } catch (Exception e) {
-            System.out.println("Invalid date format. Task creation failed.");
-            return;
+        while (true) {
+            System.out.print("Enter due date and time (yyyy-MM-dd hh:mm a): ");
+            String dueDateString = scanner.nextLine();
+            try {
+                dueDate = LocalDateTime.parse(dueDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"));
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please try again.");
+            }
         }
 
-        Task task = new Task(name, description, dueDate);
+        boolean isRepeating;
+        while (true) {
+            System.out.print("Should this task repeat daily? (yes/no): ");
+            String repeatInput = scanner.nextLine().trim().toLowerCase();
+            if (repeatInput.equals("yes")) {
+                isRepeating = true;
+                break;
+            } else if (repeatInput.equals("no")) {
+                isRepeating = false;
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            }
+        }
+
+        Task task = new Task(name, description, dueDate, isRepeating);
         taskList.add(task);
         System.out.println("Task created successfully!");
     }
@@ -127,7 +140,6 @@ public class Tasks {
             return;
         }
 
-        // Sort tasks by due date
         taskList.sort((task1, task2) -> task1.getDueDate().compareTo(task2.getDueDate()));
 
         System.out.println("\nTasks (ordered by due date):");
@@ -137,9 +149,7 @@ public class Tasks {
     }
 
     private static void editTask() {
-        System.out.print("Enter the Task ID to edit: ");
-        int taskId = Integer.parseInt(scanner.nextLine());
-
+        int taskId = getValidIntegerInput("Enter the Task ID to edit: ");
         Task task = findTaskById(taskId);
         if (task == null) {
             System.out.println("Task not found.");
@@ -159,14 +169,34 @@ public class Tasks {
             task.setDescription(newDescription);
         }
 
-        System.out.print("Enter new due date and time (yyyy-MM-dd HH:mm, leave blank to keep unchanged): ");
-        String newDueDateString = scanner.nextLine();
-        if (!newDueDateString.trim().isEmpty()) {
+        LocalDateTime newDueDate = null;
+        while (newDueDate == null) {
+            System.out.print("Enter new due date and time (yyyy-MM-dd hh:mm a, leave blank to keep unchanged): ");
+            String newDueDateString = scanner.nextLine();
+            if (newDueDateString.trim().isEmpty()) {
+                break;
+            }
             try {
-                LocalDateTime newDueDate = LocalDateTime.parse(newDueDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                newDueDate = LocalDateTime.parse(newDueDateString, DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"));
                 task.setDueDate(newDueDate);
             } catch (Exception e) {
-                System.out.println("Invalid date format. Due date not updated.");
+                System.out.println("Invalid date format. Please try again.");
+            }
+        }
+
+        String repeatOption = null;
+        while (repeatOption == null) {
+            System.out.print("Should this task repeat daily? (yes/no, leave blank to keep unchanged): ");
+            repeatOption = scanner.nextLine();
+            if (repeatOption.trim().isEmpty()) {
+                break;
+            } else if (repeatOption.trim().equalsIgnoreCase("yes")) {
+                task.setRepeating(true);
+            } else if (repeatOption.trim().equalsIgnoreCase("no")) {
+                task.setRepeating(false);
+            } else {
+                System.out.println("Invalid input. Please enter 'yes', 'no', or leave blank.");
+                repeatOption = null;
             }
         }
 
@@ -174,9 +204,7 @@ public class Tasks {
     }
 
     private static void deleteTask() {
-        System.out.print("Enter the Task ID to delete: ");
-        int taskId = Integer.parseInt(scanner.nextLine());
-
+        int taskId = getValidIntegerInput("Enter the Task ID to delete: ");
         Task task = findTaskById(taskId);
         if (task == null) {
             System.out.println("Task not found.");
@@ -196,10 +224,24 @@ public class Tasks {
         return null;
     }
 
+    private static int getValidIntegerInput(String prompt) {
+        int input;
+        while (true) {
+            System.out.print(prompt);
+            String line = scanner.nextLine();
+            try {
+                input = Integer.parseInt(line);
+                return input;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter an integer.");
+            }
+        }
+    }
+
     private static void checkAlerts() {
         while (true) {
             try {
-                Thread.sleep(1000); // Check every second
+                Thread.sleep(1000);
                 LocalDateTime now = LocalDateTime.now();
                 List<Task> dueTasks = new ArrayList<>();
 
@@ -210,10 +252,16 @@ public class Tasks {
                 }
 
                 for (Task task : dueTasks) {
-                    System.out.println("\n*** ALERT: Task is due! ***");
+                    System.out.println("\nALERT: Task is due!");
                     System.out.println(task);
-                    taskList.remove(task); // Remove the task after alert
+                    if (task.isRepeating()) {
+                        task.setDueDate(task.getDueDate().plusDays(1));
+                    } else {
+                        taskList.remove(task);
+                    }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 System.out.println("Error in alerting system: " + e.getMessage());
             }
