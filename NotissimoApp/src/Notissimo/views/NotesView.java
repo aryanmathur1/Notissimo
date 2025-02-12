@@ -1,37 +1,101 @@
 package Notissimo.views;
 
+import Notissimo.noteSaving.NotesBuilder;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
 
-public class NotesView extends JPanel {
+public class NotesView extends JPanel implements ActionListener {
 
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 800;
+    private static final int WIDTH = 300;
+    private static final int HEIGHT = 500;
+
+    private static NotesBuilder notesBuilder;
+
+    // JFrame
+    static JFrame frame;
+    static JPanel panel;
+    static JFrame addFrame;
+    static JPanel addPanel;
+
+    static NewTaskView newTaskView;
+
+    // JButton
+    static JButton addButton, removeButton;
+
+    public void draw() {
+        panel = new JPanel();
+
+        frame = new JFrame("Notissimo");
+
+        // setbackground of panel
+        panel.setBackground(Color.white);
+
+        addButtons();
+
+        // Adding panel to frame
+
+        frame.setContentPane(new NotesView());
+        frame.add(panel);
+
+        // Setting the size of frame
+        frame.setSize(300, 500);
+
+        frame.setVisible(true);
+
+    }
+
+    public void addButtons() {
+        addButton = new JButton("Add");
+        addButton.addActionListener(this);
+
+        removeButton = new JButton("Remove");
+        removeButton.addActionListener(this);
+
+        panel.add(addButton, BorderLayout.SOUTH);
+        panel.add(removeButton, BorderLayout.SOUTH);
+    }
 
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        g.setColor(Color.white);
+        g.fillRect(0, 0, getWidth(), getHeight());
 
+        int yNote = 100;
+        g2d.setColor(Color.black);
+        //notesBuilder = new NotesBuilder();
+        for (int i = 0; i < notesBuilder.length(); i++) {
+            g2d.drawString(notesBuilder.getNote(i), 10, yNote);
+            yNote += 30;
+        }
+
+        //repaint();
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == addButton) {
+            System.out.println("add");
+            newTaskView.run();
+        }
+        if (e.getSource() == removeButton) {
+            System.out.println("remove");
+        }
 
     }
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("HelloGraphics");
-        frame.setSize(WIDTH, HEIGHT);
-        frame.setLocation(0, 0);
+        notesBuilder = new NotesBuilder();
 
-        //tells the java program to exit when the graphics window is closed
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        NotesView notesView = new NotesView();
+        notesView.draw();
 
-        //put the panel on the frame and make it visible
-        frame.setContentPane(new NotesView());
-        frame.setVisible(true);
+        newTaskView = new NewTaskView();
+        newTaskView.init();
 
     }
 

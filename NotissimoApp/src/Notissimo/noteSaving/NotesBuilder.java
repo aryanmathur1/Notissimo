@@ -28,6 +28,14 @@ public class NotesBuilder {
     }
 
     /**
+     * returns how many notes
+     * @return - length of note list size
+     */
+    public int length() {
+        return notesList.size();
+    }
+
+    /**
      * returns the note at index i
      * @param i - index
      * @return - note
