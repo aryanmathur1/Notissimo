@@ -7,6 +7,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+class VolunteerEntry {
+    private String description;
+    private LocalDateTime date;
+    private double hours;
+
+    public VolunteerEntry(String description, LocalDateTime date, double hours) {
+        this.description = description;
+        this.date = date;
+        this.hours = hours;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public double getHours() {
+        return hours;
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return String.format("Date: %s, Description: %s, Hours: %.2f", date.format(formatter), description, hours);
+    }
+}
+
 class Task {
     private static int idCounter = 1;
     private int id;
@@ -130,16 +160,19 @@ class Note {
 public class Console {
     private static List<Task> taskList = new ArrayList<>();
     private static List<Note> notesList = new ArrayList<>();
+    private static List<VolunteerEntry> volunteerEntries = new ArrayList<>(); //
     private static Scanner scanner = new Scanner(System.in);
     private static boolean running = true;
 
     private static final String TASK_FILE = "tasks.txt";
     private static final String NOTE_FILE = "notes.txt";
-    private static final String COURSE_FILE = "courses.txt"; // Placeholder for course management
+    private static final String COURSE_FILE = "courses.txt";
+    private static final String VOLUNTEER_FILE = "volunteer_entries.txt";
 
     public static void main(String[] args) {
         loadTasks();
         loadNotes();
+        loadVolunteerEntries();
 
         Thread alertThread = new Thread(Console::checkAlerts);
         alertThread.setDaemon(true);
@@ -150,16 +183,19 @@ public class Console {
             System.out.println("1. Task Management System");
             System.out.println("2. GPA Calculation");
             System.out.println("3. Notes Management");
-            System.out.println("4. Exit");
+            System.out.println("4. Log Volunteer Hours");
+            System.out.println("5. Exit");
 
-            int choice = getValidIntegerInput("Choose an option (1-4): ");
+            int choice = getValidIntegerInput("Choose an option (1-5): ");
             switch (choice) {
                 case 1 -> manageTasks();
                 case 2 -> calculateGPA();
                 case 3 -> manageNotes();
-                case 4 -> {
-                    saveTasks(); // Save tasks before exiting
-                    saveNotes(); // Save notes before exiting
+                case 4 -> manageVolunteerHours();
+                case 5 -> {
+                    saveTasks();
+                    saveNotes();
+                    saveVolunteerEntries();
                     System.out.println("Exiting Console Application...");
                     running = false;
                 }
@@ -601,12 +637,143 @@ public class Console {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(NOTE_FILE))) {
             for (Note note : notesList) {
                 bw.write(note.getTitle());
-                bw.newLine(); // Write content on the next line
+                bw.newLine();
                 bw.write(note.getContent());
                 bw.newLine();
             }
         } catch (IOException e) {
             System.out.println("Error saving notes to file: " + e.getMessage());
+        }
+    }
+
+    private static void manageVolunteerHours() {
+        while (true) {
+            System.out.println("\nVolunteer Hours Tracking:");
+            System.out.println("1. Add Volunteer Entry");
+            System.out.println("2. View All Entries");
+            System.out.println("3. Search Entries by Keyword");
+            System.out.println("4. Check Total Logged Hours");
+            System.out.println("5. Back to Main Menu");
+
+            int choice = getValidIntegerInput("Choose an option (1-5): ");
+            switch (choice) {
+                case 1 -> addVolunteerEntry();
+                case 2 -> viewVolunteerEntries();
+                case 3 -> searchVolunteerEntries();
+                case 4 -> checkTotalLoggedHours();
+                case 5 -> { return; }
+                default -> System.out.println("Invalid choice, please try again.");
+            }
+        }
+    }
+
+    private static void addVolunteerEntry() {
+        System.out.print("Enter description of volunteer work: ");
+        String description = scanner.nextLine();
+
+        LocalDateTime date;
+        while (true) {
+            System.out.print("Enter date of volunteer work (yyyy-MM-dd): ");
+            String dateString = scanner.nextLine();
+            try {
+                date = LocalDateTime.parse(dateString + "T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME); // Set time to midnight
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please try again.");
+            }
+        }
+
+        double hours;
+        while (true) {
+            System.out.print("Enter number of hours volunteered: ");
+            String hoursInput = scanner.nextLine();
+            try {
+                hours = Double.parseDouble(hoursInput);
+                if (hours >= 0) break;
+                else System.out.println("Please enter a non-negative number.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        }
+
+        VolunteerEntry entry = new VolunteerEntry(description, date, hours);
+        volunteerEntries.add(entry);
+        System.out.println("Volunteer entry added successfully!");
+    }
+
+    private static void viewVolunteerEntries() {
+        if (volunteerEntries.isEmpty()) {
+            System.out.println("No volunteer entries to display.");
+        } else {
+            System.out.println("\nVolunteer Hours Entries:");
+            for (int i = 0; i < volunteerEntries.size(); i++) {
+                System.out.println((i + 1) + ". " + volunteerEntries.get(i));
+            }
+        }
+    }
+
+    private static void searchVolunteerEntries() {
+        System.out.print("Enter keyword to search for in volunteer entries: ");
+        String keyword = scanner.nextLine().toLowerCase();
+        List<VolunteerEntry> foundEntries = new ArrayList<>();
+
+        for (VolunteerEntry entry : volunteerEntries) {
+            if (entry.getDescription().toLowerCase().contains(keyword)) {
+                foundEntries.add(entry);
+            }
+        }
+
+        if (foundEntries.isEmpty()) {
+            System.out.println("No entries matched the keyword: " + keyword);
+        } else {
+            System.out.println("Found Entries:");
+            for (VolunteerEntry entry : foundEntries) {
+                System.out.println(entry);
+            }
+        }
+    }
+
+    private static void checkTotalLoggedHours() {
+        double totalHours = volunteerEntries.stream().mapToDouble(VolunteerEntry::getHours).sum();
+        System.out.println("Total logged volunteer hours: " + totalHours);
+
+        // Optional: Allow the user to set a goal and compare
+        System.out.print("Enter your volunteer hours goal: ");
+        double goal = scanner.nextDouble();
+        scanner.nextLine(); // Consume newline
+        System.out.printf("You have logged %.2f hours out of your goal of %.2f hours.%n", totalHours, goal);
+    }
+
+    private static void loadVolunteerEntries() {
+        File file = new File(VOLUNTEER_FILE);
+        if (file.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String description = line;
+                    LocalDateTime date = LocalDateTime.parse(br.readLine() + "T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    double hours = Double.parseDouble(br.readLine());
+                    VolunteerEntry entry = new VolunteerEntry(description, date, hours);
+                    volunteerEntries.add(entry);
+                }
+            } catch (IOException e) {
+                System.out.println("Error reading volunteer entries from file: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void saveVolunteerEntries() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(VOLUNTEER_FILE))) {
+            for (VolunteerEntry entry : volunteerEntries) {
+                bw.write(entry.getDescription());
+                bw.newLine();
+                bw.write(entry.getDate().toLocalDate().toString());
+                bw.newLine();
+                bw.write(String.valueOf(entry.getHours()));
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving volunteer entries to file: " + e.getMessage());
         }
     }
 }
