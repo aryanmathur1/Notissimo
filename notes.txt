@@ -5,3 +5,6 @@ Test Create Note
 Test Note 3
 test 4
 samosa5
+test note 6
+test7
+test non static
