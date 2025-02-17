@@ -66,7 +66,7 @@ public class NotesView extends JPanel implements ActionListener {
 
         int yNote = 100;
         g2d.setColor(Color.black);
-        //notesBuilder = new NotesBuilder();
+
         for (int i = 0; i < notesBuilder.length(); i++) {
             g2d.drawString(notesBuilder.getNote(i), 10, yNote);
             yNote += 30;
@@ -91,11 +91,11 @@ public class NotesView extends JPanel implements ActionListener {
 
         notesBuilder = new NotesBuilder();
 
-        NotesView notesView = new NotesView();
-        notesView.draw();
-
         newTaskView = new NewTaskView();
         newTaskView.init();
+
+        NotesView notesView = new NotesView();
+        notesView.draw();
 
     }
 

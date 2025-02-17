@@ -14,7 +14,7 @@ import javax.swing.*;
 public class NewTaskView extends JFrame implements ActionListener {
 
     private static NewTaskView newTaskView;
-    private static NotesBuilder notesBuilder;
+    public NotesBuilder notesBuilder;
 
     // JFrame
     static JFrame frame;
@@ -39,13 +39,11 @@ public class NewTaskView extends JFrame implements ActionListener {
     public void run() {
         init();
 
-        newTaskView.draw();
+        draw();
     }
 
     public void init() {
         notesBuilder = new NotesBuilder();
-        newTaskView = new NewTaskView();
-
     }
 
     public void draw() {
