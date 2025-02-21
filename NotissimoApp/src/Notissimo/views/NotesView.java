@@ -73,11 +73,13 @@ public class NotesView extends JPanel implements ActionListener {
 
         // need to animate this; doesn't update when I create new note until I rerun program
         for (int i = 0; i < notesBuilder.length(); i++) {
-            g2d.drawString(notesBuilder.getNote(i), 10, yNote);
+            g2d.drawString(notesBuilder.getFormattedNote(i), 10, yNote);
             yNote += 30;
         }
 
-        //repaint();
+        notesBuilder.read();
+
+        repaint();
     }
 
     public void actionPerformed(ActionEvent e) {

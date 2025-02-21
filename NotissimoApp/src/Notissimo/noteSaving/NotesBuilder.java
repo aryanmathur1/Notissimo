@@ -71,6 +71,15 @@ public class NotesBuilder {
     }
 
     /**
+     * returns the note at index i in a formatted way
+     * @param i - index
+     * @return - formatted note
+     */
+    public String getFormattedNote(int i) {
+        return (notesList.get(i) + " - " + monthList.get(i) + " " + dayList.get(i) + ", " + yearList.get(i));
+    }
+
+    /**
      * returns the year at index i
      * @param i - index
      * @return - year
@@ -341,6 +350,16 @@ public class NotesBuilder {
             }
         }
         System.out.println();
+    }
+
+    /**
+     * reads the notes from the txt file
+     */
+    public void read() {
+        notesList = readNotes();
+        monthList = readMonths();
+        dayList = readDays();
+        yearList = readYears();
     }
 
 }
