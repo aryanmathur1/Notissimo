@@ -1,7 +1,4 @@
-package Notissimo.views;// Java Program to Create a JPanel with a Border Layout
-// and Adding Components to It
-
-// Importing required classes
+package Notissimo.views;
 
 import Notissimo.noteSaving.NotesBuilder;
 
@@ -9,8 +6,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-// Main class
-// Extending JFrame class
+/**
+ * CREATE NOTES VIEW
+ * Text fields for note, month, day, and year
+ * when create button clicked, window closed and new note is created
+ */
 public class NewTaskView extends JFrame implements ActionListener {
 
     private static NewTaskView newTaskView;

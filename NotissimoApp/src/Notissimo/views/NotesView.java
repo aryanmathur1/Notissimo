@@ -6,6 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * MAIN JFRAME TO TEST NOTES LISTS FROM TEXT FILES
+ * ALSO A TEST FOR WHEN YOU CLICK A BUTTON NEW TASK VIEW SHOWS
+ */
 public class NotesView extends JPanel implements ActionListener {
 
     private static final int WIDTH = 300;

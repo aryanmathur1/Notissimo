@@ -1,8 +1,12 @@
 package Notissimo.noteSaving;
 
 import Notissimo.UtilityValues;
-
 import java.util.Scanner;
+
+/**
+ * THIS IS A TEST FILE TO TEST THE NOTES BUILDER OBJECT
+ * Console-based text editing
+ */
 
 public class NotesBuilderTest {
 

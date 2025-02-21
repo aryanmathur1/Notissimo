@@ -1,7 +1,7 @@
 package Notissimo;
 
-/*
- * THESE ARE ALL THE CONSTANTS IN OUR PROJECT
+/**
+ * THESE ARE MANY OF THE CONSTANTS IN OUR PROJECT
  */
 
 public class UtilityValues {

@@ -8,6 +8,14 @@ import java.io.PrintWriter;
 
 /**
  * Object for a NotesBuilder to save notes along with dates
+ * methods:
+ * internal read and write methods
+ * add note
+ * remove note
+ * edit note
+ * write()
+ * clear
+ * print notes
  */
 public class NotesBuilder {
 
