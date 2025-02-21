@@ -1,7 +1,6 @@
 package Notissimo.testFiles;
 //integral imports for reading/writing to files, ArrayList/List, Date/Time, and user input.
 import java.io.*;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -187,42 +186,13 @@ class Note {
     }
 }
 
-// It said something about login/sign-in so I assume there should be a useraccount class
-class UserAccount {
-    private static String username;
-    private static String password;
-
-    //Constructor
-    public UserAccount(String aUsername, String aPassword) {
-        username = aUsername;
-        password = aPassword;
-    }
-
-    //Getters and Setters
-    public static String getUsername() {
-        return username;
-    }
-
-    public static String getPassword() {
-        return password;
-    }
-
-    public static void setUsername(String aUsername) {
-        username = aUsername;
-    }
-
-    public static void setPassword(String aPassword) {
-        password = aPassword;
-    }
-}
-
 // Main class for the console application
 public class Console {
     private static List<Task> taskList = new ArrayList<>(); // List to store tasks
     private static List<Note> notesList = new ArrayList<>(); // List to store notes
     private static List<VolunteerEntry> volunteerEntries = new ArrayList<>(); // List to store volunteer entries
     private static Scanner scanner = new Scanner(System.in); // Scanner for user input
-    private static boolean running = false; // Flag to control the main application loop
+    private static boolean running = true; // Flag to control the main application loop
 
     private static final String TASK_FILE = "tasks.txt"; // File path for storing tasks
     private static final String NOTE_FILE = "notes.txt"; // File path for storing notes
@@ -231,44 +201,6 @@ public class Console {
 
     // Main method - entry point of the application
     public static void main(String[] args) {
-        int LogSign = getValidIntegerInput("1. Make New Account or 2. Login");
-        if (LogSign == 1) {
-            System.out.println("Enter New Username: ");
-            String username = scanner.nextLine(); // Get a username
-            System.out.println("Enter New Password: ");
-            String password = scanner.nextLine(); // Get a password
-            UserAccount a1 = new UserAccount(username, password); //Modify later to make this add to an ArrayList of UserAccounts, you could also save specific files to each UserAccount
-            System.out.println("Enter Username: ");
-            String confirmUser = scanner.nextLine(); // confirm username
-            System.out.println("Enter Password: ");
-            String confirmPass = scanner.nextLine(); // confirm password
-            if (confirmUser.equals(a1.getUsername()) || confirmPass.equals(a1.getPassword())) {
-                System.out.println("Account confirmed.");
-                running = true;
-            } else {
-                //loop around with a while loop to try and confirm username and password repeatedly until they get it right
-            }
-        } else {
-            System.out.println("Enter Username: ");
-            String username = scanner.nextLine(); // Give your username
-            if (UserAccount.getUsername().equals(username)) { /*Find a way to store previously made UserAccounts and modify this to
-            search across all previously stored UserAccounts to find one that matches the username */
-                System.out.println("Enter Password: ");
-                String password = scanner.nextLine(); // Try a password
-
-                if (UserAccount.getPassword().equals(password)) {
-                    System.out.println("Logging In...");
-                    running = true;
-                } else {
-                    System.out.println("Incorrect Password, try again."); //This part should be modified later to let you loop back and try to enter another password.
-                }
-
-            } else { //this is for the situation where a UserAccount with the username does not exist
-                System.out.println("Account does not exist.");
-            }
-
-        }
-
         loadTasks(); // Load tasks from file
         loadNotes(); // Load notes from file
         loadVolunteerEntries(); // Load volunteer entries from file
@@ -277,8 +209,6 @@ public class Console {
         Thread alertThread = new Thread(Console::checkAlerts);
         alertThread.setDaemon(true); // Set as a daemon thread so it doesn't prevent the program from exiting
         alertThread.start(); // Start the alert thread
-
-
 
         // Main application loop
         while (running) {
@@ -377,19 +307,11 @@ public class Console {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now(); // Get the current date and time
-
         taskList.sort((task1, task2) -> task1.getDueDate().compareTo(task2.getDueDate())); // Sort the task list by due date
 
         System.out.println("\nTasks (ordered by due date):");
         for (Task task : taskList) {
-            if (task.getDueDate().isBefore(now) || task.getDueDate().isEqual(now)) {
-                System.out.println("\u001B[31m" + task + "\u001B[0m"); // Print each task to the console, red for overdue
-            } else if (Duration.between(task.getDueDate(), now).toDays() <= 2) {
-                System.out.println("\u001B[33m" + task + "\u001B[0m"); // Print each task to the console, yellow for priority
-            } else if (Duration.between(task.getDueDate(), now).toDays() > 2) {
-                System.out.println("\u001B[32m" + task + "\u001B[0m"); // Print each task to the console, green for upcoming
-            }
+            System.out.println(task); // Print each task to the console
         }
     }
 
