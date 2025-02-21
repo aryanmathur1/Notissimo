@@ -246,7 +246,7 @@ public class NotesBuilder {
      * @param year - year
      */
     public void addNote(String note, int month, int day, int year) {
-        // first add to list
+        // first add to the list
         notesList.add(note);
         // check if month is in range 1-12
         month = Math.min(month, 12);
@@ -257,14 +257,44 @@ public class NotesBuilder {
     }
 
     /**
-     * removes a note at a certain index
-     * @param index - index at which note should be removed
+     * Edit notes with this function
+     * @param index - index to be edited
+     * @param note - new note
+     * @param month - new month
+     * @param day - new day
+     * @param year - new year
+     * @return - returns true if successfully edited, otherwise false
      */
-    public void removeNote(int index) {
-        notesList.remove(index);
-        monthList.remove(index);
-        dayList.remove(index);
-        yearList.remove(index);
+    public boolean editNote(int index, String note, int month, int day, int year) {
+        if (notesList.size() > index+1) {
+            notesList.set(index, note);
+            // check if month is in range 1-12
+            month = Math.min(month, 12);
+            month = Math.max(month, 1);
+            monthList.set(index, months[month - 1]);
+            dayList.set(index, String.valueOf(day));
+            yearList.set(index, String.valueOf(year));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * removes a note at a certain index ONLY if the index is not out of bounds
+     * @param index - index at which note should be removed
+     * @return - returns true if successfully deleted, otherwise false
+     */
+    public boolean removeNote(int index) {
+        if (notesList.size() > index+1) {
+            notesList.remove(index);
+            monthList.remove(index);
+            dayList.remove(index);
+            yearList.remove(index);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

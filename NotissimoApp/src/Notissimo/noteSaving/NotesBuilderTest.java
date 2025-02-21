@@ -59,6 +59,25 @@ public class NotesBuilderTest {
 
             } else if (command.equals(UtilityValues.RESET_COMMAND)) {
                 notesBuilder.clear();
+            } else if (command.equals(UtilityValues.EDIT_COMMAND)) {
+                System.out.print("Enter note: ");
+                note = in.nextLine();
+
+                do {
+                    System.out.print("Enter month # 1-12: ");
+                    String monthStr = in.nextLine();
+                    month = Integer.parseInt(monthStr);
+                } while (!(month >= 1 && month <= 12));
+
+                System.out.print("Enter day: ");
+                day = in.nextInt();
+                System.out.print("Enter year: ");
+                year = in.nextInt();
+
+                System.out.println("enter index");
+                int index = in.nextInt();
+
+                notesBuilder.editNote(index, note, month, day, year);
             } else {
                 System.out.println("Invalid Command");
             }
