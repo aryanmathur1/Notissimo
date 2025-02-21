@@ -189,8 +189,8 @@ class Note {
 
 // It said something about login/sign-in so I assume there should be a useraccount class
 class UserAccount {
-    private String username;
-    private String password;
+    private static String username;
+    private static String password;
 
     //Constructor
     public UserAccount(String aUsername, String aPassword) {
@@ -383,12 +383,13 @@ public class Console {
 
         System.out.println("\nTasks (ordered by due date):");
         for (Task task : taskList) {
-            if (task.getDueDate().isBefore(now) || task.getDueDate().isEqual(now))
+            if (task.getDueDate().isBefore(now) || task.getDueDate().isEqual(now)) {
                 System.out.println("\u001B[31m" + task + "\u001B[0m"); // Print each task to the console, red for overdue
-            } elseif (Duration.between(task.getDueDate(), now).toDays() <= 2) {
+            } else if (Duration.between(task.getDueDate(), now).toDays() <= 2) {
                 System.out.println("\u001B[33m" + task + "\u001B[0m"); // Print each task to the console, yellow for priority
-            } elseif (Duration.between(task.getDueDate(), now).toDays() > 2) {
-                    System.out.println("\u001B[32m" + task + "\u001B[0m"); // Print each task to the console, green for upcoming
+            } else if (Duration.between(task.getDueDate(), now).toDays() > 2) {
+                System.out.println("\u001B[32m" + task + "\u001B[0m"); // Print each task to the console, green for upcoming
+            }
         }
     }
 
