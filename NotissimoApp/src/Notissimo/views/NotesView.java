@@ -71,7 +71,6 @@ public class NotesView extends JPanel implements ActionListener {
         int yNote = 100;
         g2d.setColor(Color.black);
 
-        // need to animate this; doesn't update when I create new note until I rerun program
         for (int i = 0; i < notesBuilder.length(); i++) {
             g2d.drawString(notesBuilder.getFormattedNote(i), 10, yNote);
             yNote += 30;
