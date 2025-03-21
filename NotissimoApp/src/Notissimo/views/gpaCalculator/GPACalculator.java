@@ -2,6 +2,7 @@ package Notissimo.views.gpaCalculator;
 
 import Notissimo.views.CustomElements.FancyButton;
 import Notissimo.views.CustomElements.HintTextField;
+import Notissimo.views.NotissimoApp;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,6 +20,9 @@ public class GPACalculator extends JFrame {
     private ArrayList<JTextField> creditFields;
 
     public GPACalculator() {
+
+        JPanel mainPanel = new JPanel();
+
         // set up the frame
         setTitle("GPA Calculator");
         setSize(500, 400);
@@ -41,6 +45,12 @@ public class GPACalculator extends JFrame {
         resultLabel.setFont(new Font("Arial", Font.BOLD, 20));
         resultLabel.setBorder(new EmptyBorder(10, 20, 10, 20)); // padding
         resultLabel.setForeground(new Color(86, 0, 255, 255));
+
+        FancyButton homeButton = new FancyButton("Home");
+        homeButton.addActionListener(_ -> {
+            dispose();
+            new NotissimoApp().draw();
+        });
 
         // Create add course button
         addCourseButton = new FancyButton("Add Course");
@@ -68,11 +78,17 @@ public class GPACalculator extends JFrame {
         buttonPanel.add(calculateButton);
 
         // create container panel
-        JPanel mainPanel = new JPanel();
+
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(new JScrollPane(coursePanel), BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        mainPanel.add(resultLabel, BorderLayout.NORTH);
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new FlowLayout());
+        titlePanel.add(resultLabel);
+        titlePanel.add(homeButton);
+
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
 
         // add the panel to the frame
         add(mainPanel);

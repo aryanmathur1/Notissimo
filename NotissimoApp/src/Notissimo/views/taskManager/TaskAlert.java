@@ -13,14 +13,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * THIS IS THE TASK MANAGER VIEW
- * This can be called from another file as well
- * Uses the NotesBuilder object
- * UI
- *
- * - Aryan Mathur 2025
+ * ALERT AT START OF THE PROGRAM
+ * So basically i copied my task manager code but removed the input fields and changed dimensions
  */
-public class TaskManagerView {
+public class TaskAlert {
 
     NotesBuilder notesBuilder;
 
@@ -38,11 +34,11 @@ public class TaskManagerView {
     private JSpinner dateTimeSpinner;
 
     // Default Constructor - Basically when called, a new window opens
-    public TaskManagerView() {
+    public TaskAlert() {
         // setting frame default info
-        frame = new JFrame("Task Manager");
+        frame = new JFrame("TO DO LIST");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
+        frame.setSize(600, 400);
         frame.setLayout(new BorderLayout());
 
         // initializing notes builder, the object I created for task saving
@@ -52,17 +48,13 @@ public class TaskManagerView {
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new FlowLayout());
         titlePanel.setBackground(new Color(255, 255, 255));
-        JLabel label = new JLabel("Tasks");
+        JLabel label = new JLabel("Tasks TO DO");
         label.setFont(new Font("Arial", Font.BOLD, 20));
-
-        FancyButton homeButton = new FancyButton("Home");
-        homeButton.addActionListener(_ -> {
-            frame.dispose();
-            new NotissimoApp().draw();
-        });
+        JLabel caption = new JLabel("Close this alert to continue");
+        caption.setFont(new Font("Arial", Font.PLAIN, 12));
 
         titlePanel.add(label);
-        titlePanel.add(homeButton);
+        //titlePanel.add(caption);
 
         // saving everything in an array lists just for east use
         tasks = new ArrayList<>();
@@ -98,58 +90,19 @@ public class TaskManagerView {
 
         notesBuilder.printNotes(); // print to console for debugging
 
-        // INPUT PANE - entering note, data, adding and removing notes
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new FlowLayout());
-        inputPanel.setBackground(new Color(86, 0, 255, 255));
-
-        // text field for new note
-        taskField = new HintTextField("Enter a New Note");
-        taskField.setColumns(20);
-        taskField.setForeground(Color.WHITE);
-        taskField.setFont(new Font("Arial", Font.PLAIN, 12));
-        taskField.setBackground(new Color(86, 0, 255, 255));
-        inputPanel.add(taskField);
-
-        // date chooser
-        dateTimeSpinner = new JSpinner(new SpinnerDateModel());
-        JSpinner.DateEditor dateTimeEditor = new JSpinner.DateEditor(dateTimeSpinner, "yyyy-MM-dd");
-        dateTimeSpinner.setEditor(dateTimeEditor);
-        // Set the font and background color for the JSpinner (date picker)
-        dateTimeSpinner.setFont(new Font("Arial", Font.PLAIN, 12)); // Set the font
-        dateTimeSpinner.setBackground(new Color(86, 0, 255, 255));  // Set background color
-        JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) dateTimeSpinner.getEditor();
-        editor.getTextField().setFont(new Font("Arial", Font.PLAIN, 12));  // Set font for the text field inside the spinner
-        editor.getTextField().setBackground(new Color(86, 0, 255, 255));  // Set background color for the text field
-        editor.getTextField().setForeground(Color.WHITE);  // Set the font color of the text field to white
-        inputPanel.add(dateTimeSpinner);
-
-        // BUTTONS using my custom FancyButtons class!! - looks slightly nicer
-
-        // add button
-        FancyButton addButton = new FancyButton("New Task");
-        addButton.setColorOver(new Color(82, 174, 116));
-        addButton.setColorClick(new Color(155, 197, 166));
-        addButton.setBorderColor(new Color(43, 122, 68));
-        addButton.setRadius(25);
-        addButton.addActionListener(_ -> addTask());
-        inputPanel.add(addButton);
-
-        // remove task button
-        FancyButton removeButton = new FancyButton("Copmlete Task");
-        removeButton.setColorOver(new Color(237, 133, 159));
-        removeButton.setColorClick(new Color(225, 172, 186));
-        removeButton.setBorderColor(new Color(221, 0, 39));
-        removeButton.setRadius(25);
-        removeButton.addActionListener(_ -> removeTask());
-        inputPanel.add(removeButton);
-
-        inputPanel.setFocusable(true);
+        JPanel continuePanel = new JPanel();
+        // adding a continue button
+        FancyButton continueButton = new FancyButton("Continue");
+        continueButton.addActionListener(_ -> {
+            frame.dispose();
+            new NotissimoApp().draw();
+        });
+        continuePanel.add(continueButton);
 
         // adding one by one in order
         frame.add(titlePanel, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
-        frame.add(inputPanel, BorderLayout.SOUTH);
+        frame.add(continuePanel, BorderLayout.SOUTH);
 
         frame.setLocationRelativeTo(null); // this method display the JFrame to center position of a screen
 
@@ -239,7 +192,7 @@ public class TaskManagerView {
      * MAIN METHOD - just making a new instance of the graphics window
      */
     public static void main(String[] args) {
-        new TaskManagerView();
+        new TaskAlert();
     }
 
     // custom ListCellRenderer class to add padding and filled rounded rectangles around each task item

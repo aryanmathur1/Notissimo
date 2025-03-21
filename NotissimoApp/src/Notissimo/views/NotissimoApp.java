@@ -2,6 +2,7 @@ package Notissimo.views;
 
 import Notissimo.views.CustomElements.FancyButton;
 import Notissimo.views.gpaCalculator.GPACalculator;
+import Notissimo.views.taskManager.TaskAlert;
 import Notissimo.views.taskManager.TaskManagerView;
 
 import javax.swing.*;
@@ -35,6 +36,8 @@ public class NotissimoApp extends JPanel {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        frame.setLocationRelativeTo(null); // this method display the JFrame to center position of a screen
+
     }
 
     public void addButtons() {
@@ -44,6 +47,8 @@ public class NotissimoApp extends JPanel {
         openTaskManagement.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // first close home scren
+                frame.dispose();
                 new TaskManagerView();  // add new course fields when button is clicked
             }
         });
@@ -53,6 +58,8 @@ public class NotissimoApp extends JPanel {
         openGPACalculator.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // first close home scren
+                frame.dispose();
                 new GPACalculator();  // add new course fields when button is clicked
             }
         });
@@ -64,8 +71,11 @@ public class NotissimoApp extends JPanel {
 
     public static void main(String[] args) {
 
-        NotissimoApp notissimoApp = new NotissimoApp();
-        notissimoApp.draw();
+//        NotissimoApp notissimoApp = new NotissimoApp();
+//        notissimoApp.draw();
+
+        // start with alert:
+        new TaskAlert();
 
     }
 
