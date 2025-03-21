@@ -1,4 +1,4 @@
-package Notissimo.views;
+package Notissimo.views.taskManager;
 
 import Notissimo.noteSaving.NotesBuilder;
 

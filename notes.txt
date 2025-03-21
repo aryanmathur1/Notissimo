@@ -1,4 +1,3 @@
-first note after conflict
-another note
-pasty
-samosa on top
+This is a test note to add
+Sprint Retrospective due
+samosa

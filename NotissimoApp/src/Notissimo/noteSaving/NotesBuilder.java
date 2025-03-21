@@ -58,7 +58,7 @@ public class NotesBuilder {
      * @return - month
      */
     public String getMonth(int i) {
-        return months[i];
+        return monthList.get(i);
     }
 
     /**
@@ -303,7 +303,7 @@ public class NotesBuilder {
      * @return - returns true if successfully deleted, otherwise false
      */
     public boolean removeNote(int index) {
-        if (notesList.size() > index+1) {
+        if (index != -1) {
             notesList.remove(index);
             monthList.remove(index);
             dayList.remove(index);

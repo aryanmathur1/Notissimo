@@ -1,6 +1,7 @@
-package Notissimo.views;
+package Notissimo.views.taskManager;
 
 import Notissimo.noteSaving.NotesBuilder;
+import Notissimo.views.CustomElements.FancyButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +27,8 @@ public class NotesView extends JPanel implements ActionListener {
     static NewTaskView newTaskView;
 
     // JButton
-    static JButton addButton, removeButton;
+    static FancyButton addButton, removeButton;
+    static JButton fancyButton;
 
     public void draw() {
         panel = new JPanel();
@@ -36,12 +38,12 @@ public class NotesView extends JPanel implements ActionListener {
         // setbackground of panel
         panel.setBackground(Color.white);
 
-        addButtons();
-
         // Adding panel to frame
 
         frame.setContentPane(new NotesView());
         frame.add(panel);
+
+        addButtons();
 
         // Setting the size of frame
         frame.setSize(300, 500);
@@ -51,14 +53,21 @@ public class NotesView extends JPanel implements ActionListener {
     }
 
     public void addButtons() {
-        addButton = new JButton("Add");
+        addButton = new FancyButton("add");
+        addButton.setColorOver(new Color(127, 188, 147));
+        addButton.setColorClick(new Color(153, 191, 163));
+        addButton.setBorderColor(new Color(43, 122, 68));
         addButton.addActionListener(this);
 
-        removeButton = new JButton("Remove");
+        removeButton = new FancyButton("remove");
+        removeButton.setColorOver(new Color(237, 133, 159));
+        removeButton.setColorClick(new Color(225, 172, 186));
+        removeButton.setBorderColor(new Color(221, 0, 39));
         removeButton.addActionListener(this);
 
         panel.add(addButton, BorderLayout.SOUTH);
         panel.add(removeButton, BorderLayout.SOUTH);
+
     }
 
     public void paintComponent(Graphics g) {
@@ -71,6 +80,7 @@ public class NotesView extends JPanel implements ActionListener {
         int yNote = 100;
         g2d.setColor(Color.black);
 
+        // NOTES WRITTED LINE BY LINE HERE
         for (int i = 0; i < notesBuilder.length(); i++) {
             g2d.drawString(notesBuilder.getFormattedNote(i), 10, yNote);
             yNote += 30;

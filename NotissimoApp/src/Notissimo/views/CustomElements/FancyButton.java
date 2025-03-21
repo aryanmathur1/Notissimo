@@ -5,7 +5,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class MyButton extends JButton {
+/**
+ * This is a better version of the regular JButton
+ * You can set numerous color
+ */
+public class FancyButton extends JButton {
 
     private boolean over;
     private Color color;
@@ -14,11 +18,16 @@ public class MyButton extends JButton {
     private Color borderColor;
     private int radius = 0;
 
-    public MyButton() {
+    public FancyButton(String text) {
+        setText(text);
+        setBorderPainted(false);
+        setFocusPainted(false);
+        setFont(new Font("Arial", Font.BOLD, 12));
+
         // init color
         color = Color.WHITE;
-        colorOver = new Color(183, 160, 250);
-        colorClick = new Color(155, 144, 184);
+        colorOver = new Color(161, 133, 243);
+        colorClick = new Color(206, 190, 237);
         borderColor = new Color(60, 30, 136);
 
         setContentAreaFilled(false);
@@ -113,7 +122,13 @@ public class MyButton extends JButton {
         // paint border
         g2d.setColor(borderColor);
         g2d.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-        g2d.setColor(getBackground());
+
+        if (getBackground() == colorOver) {
+            g2d.setColor(getBackground());
+        } else {
+            g2d.setColor(colorClick);
+        }
+        //g2d.setColor(colorOver.brighter().brighter().brighter());
         // border set 2 pixels
         g2d.fillRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
 
