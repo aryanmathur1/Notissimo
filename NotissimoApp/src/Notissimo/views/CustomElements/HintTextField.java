@@ -20,17 +20,4 @@ public class HintTextField extends JTextField {
             g2.drawString(hint, getInsets().left + 5, getHeight() / 2 + g.getFontMetrics().getAscent() / 2 - 2);
         }
     }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Hint Example");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
-        frame.setLayout(new FlowLayout());
-
-        HintTextField textField = new HintTextField("Enter your name...");
-        textField.setColumns(20);
-
-        frame.add(textField);
-        frame.setVisible(true);
-    }
 }
