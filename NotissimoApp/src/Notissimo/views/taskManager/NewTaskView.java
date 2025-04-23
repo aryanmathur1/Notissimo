@@ -131,7 +131,7 @@ public class NewTaskView extends JFrame implements ActionListener {
 
             if (!noteField.getText().isEmpty() && !monthField.getText().isEmpty() && !dayField.getText().isEmpty() && !yearField.getText().isEmpty()) {
                 // if everything is not empty, then add note and close window
-                notesBuilder.addNote(noteField.getText(), Integer.parseInt(monthField.getText()), Integer.parseInt(dayField.getText()), Integer.parseInt(yearField.getText()));
+                notesBuilder.addNote(noteField.getText(), Integer.parseInt(monthField.getText()), Integer.parseInt(dayField.getText()), Integer.parseInt(yearField.getText()), false);
                 notesBuilder.write();
                 notesBuilder.printNotes();
                 frame.dispose();

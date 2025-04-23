@@ -47,8 +47,10 @@ public class NotesBuilderTest {
                 day = in.nextInt();
                 System.out.print("Enter year: ");
                 year = in.nextInt();
+                System.out.println("Enter Priority: ");
+                boolean priority = in.nextBoolean();
 
-                notesBuilder.addNote(note, month, day, year);
+                notesBuilder.addNote(note, month, day, year, priority);
 
             } else if (command.equals(UtilityValues.REMOVE_COMMAND)) {
 
@@ -81,7 +83,10 @@ public class NotesBuilderTest {
                 System.out.println("enter index");
                 int index = in.nextInt();
 
-                notesBuilder.editNote(index, note, month, day, year);
+                System.out.println("Enter priority: ");
+                boolean priority = in.nextBoolean();
+
+                notesBuilder.editNote(index, note, month, day, year, priority);
             } else {
                 System.out.println("Invalid Command");
             }
