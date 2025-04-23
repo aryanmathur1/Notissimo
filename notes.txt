@@ -1,7 +1,5 @@
-symposium
 hi
 hi
-test
 test2
 test
 anotha one

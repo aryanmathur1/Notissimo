@@ -22,7 +22,7 @@ public class FancyButton extends JButton {
         setText(text);
         setBorderPainted(false);
         setFocusPainted(false);
-        setFont(new Font("Arial", Font.BOLD, 12));
+        setFont(new Font("Arial", Font.PLAIN, 12));
 
         // init color
         color = Color.WHITE;

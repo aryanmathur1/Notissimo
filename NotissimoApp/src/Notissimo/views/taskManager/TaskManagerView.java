@@ -123,31 +123,32 @@ public class TaskManagerView extends JPanel {
         inputPanel.add(priorityDropdown);
 
         // New task button
-        FancyButton addButton = new FancyButton("New Task");
-        addButton.setColorOver(new Color(82, 174, 116));
-        addButton.setColorClick(new Color(155, 197, 166));
-        addButton.setBorderColor(new Color(43, 122, 68));
-        addButton.setRadius(25);
+        FancyButton addButton = new FancyButton("New Task 📝");
+        addButton.setColorOver(new Color(255, 255, 255));
+        addButton.setColorClick(new Color(255, 255, 255));
+        addButton.setBorderColor(new Color(255, 255, 255));
+        addButton.setRadius(15);
         addButton.addActionListener(_ -> addTask(priorityDropdown));
         inputPanel.add(addButton);
 
         // Remove task button
-        FancyButton removeButton = new FancyButton("Complete Task");
-        removeButton.setColorOver(new Color(237, 133, 159));
-        removeButton.setColorClick(new Color(225, 172, 186));
-        removeButton.setBorderColor(new Color(221, 0, 39));
-        removeButton.setRadius(25);
+        FancyButton removeButton = new FancyButton("Complete Task  ✅");
+        removeButton.setColorOver(new Color(255, 255, 255));
+        removeButton.setColorClick(new Color(255, 255, 255));
+        removeButton.setBorderColor(new Color(255, 255, 255));
+        removeButton.setRadius(15);
         removeButton.addActionListener(_ -> removeTask());
         inputPanel.add(removeButton);
 
         // Filter button for high-priority tasks in top-right corner
-        FancyButton filterButton = new FancyButton("Priority Filter");
-        filterButton.setFont(new Font("Arial", Font.PLAIN, 10));
-        filterButton.setColorOver(new Color(186, 186, 186));
-        filterButton.setColorClick(new Color(160, 160, 160));
-        filterButton.setBorderColor(new Color(220, 220, 220));
+        FancyButton filterButton = new FancyButton("Filter");
+        filterButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        filterButton.setForeground(new Color(255, 255, 255));
+        filterButton.setColorOver(new Color(86, 0, 255));
+        filterButton.setColorClick(new Color(86, 0, 255));
+        filterButton.setBorderColor(new Color(86, 0, 255));
         filterButton.setRadius(20);
-        filterButton.setPreferredSize(new Dimension(90, 30));
+        filterButton.setPreferredSize(new Dimension(80, 30));
         filterButton.addActionListener(_ -> toggleFilter());
         filterButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
