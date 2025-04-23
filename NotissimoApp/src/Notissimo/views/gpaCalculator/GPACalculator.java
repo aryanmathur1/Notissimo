@@ -133,6 +133,10 @@ public class GPACalculator {
 
             double finalGPA = totalWeightedPoints / totalCredits;
             resultLabel.setText("Your GPA is: " + String.format("%.2f", finalGPA));
+
+            // save in txt file for home screen
+            String gpaLast = String.format("%.2f", finalGPA);
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Please enter valid numbers in all fields.");
         }

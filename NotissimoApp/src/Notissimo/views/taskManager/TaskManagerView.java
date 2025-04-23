@@ -157,11 +157,18 @@ public class TaskManagerView extends JPanel {
         filterPanel.setBackground(new Color(255, 255, 255));
         filterPanel.add(filterButton);
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.setBackground(new Color(255, 255, 255));
+        topPanel.add(titlePanel, BorderLayout.WEST);
+        topPanel.add(filterPanel, BorderLayout.EAST);
+
+
         // Adding components to the main panel
-        add(titlePanel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
-        add(filterPanel, BorderLayout.NORTH);
+        //add(filterPanel, BorderLayout.NORTH);
     }
 
     // Add a task to the list
@@ -189,7 +196,7 @@ public class TaskManagerView extends JPanel {
             // Refresh the task list display
             updateTaskList();
 
-            notesBuilder.addNote(taskText, month, day, year, priority);
+            notesBuilder.addNote("title", taskText, month, day, year, priority);
             notesBuilder.write();
             notesBuilder.printNotes();
 

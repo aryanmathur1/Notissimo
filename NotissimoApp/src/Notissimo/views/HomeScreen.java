@@ -42,7 +42,7 @@ public class HomeScreen {
 
         frame = new JFrame("Notissimo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(900, 600);
 
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(BUTTON_FONT);

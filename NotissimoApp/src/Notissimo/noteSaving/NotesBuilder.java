@@ -7,38 +7,53 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Object for a NotesBuilder to save notes along with dates and priorities (true/false)
- * methods:
- * internal read and write methods
- * add note
- * remove note
- * edit note
- * write()
- * clear
- * print notes
+ * Object for a NotesBuilder to save notes along with titles, dates, and priorities (true/false)
+ *
+ * Methods:
+ * - internal read and write methods
+ * - add note
+ * - remove note
+ * - edit note
+ * - write()
+ * - clear()
+ * - print notes
  */
 public class NotesBuilder {
 
-    private ArrayList<String> notesList;
-    private ArrayList<String> monthList;
-    private ArrayList<String> dayList;
-    private ArrayList<String> yearList;
-    private ArrayList<Boolean> priorityList;  // Changed to Boolean
+    private ArrayList<String> titlesList;  // List of note titles
+    private ArrayList<String> notesList;   // List of note contents
+    private ArrayList<String> monthList;   // List of months
+    private ArrayList<String> dayList;     // List of days
+    private ArrayList<String> yearList;    // List of years
+    private ArrayList<Boolean> priorityList;  // List of priorities (true = high)
 
-    private final String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    private final String[] months = {
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+    };
 
     /**
-     * Default constructor to instantiate the array lists
+     * Default constructor to instantiate the array lists from file
      */
     public NotesBuilder() {
-        notesList = readNotes();
-        monthList = readMonths();
-        dayList = readDays();
-        yearList = readYears();
-        priorityList = readPriorities();  // Add priority reading
+        titlesList = readTitles();       // Read titles from titles.txt
+        notesList = readNotes();         // Read notes from notes.txt
+        monthList = readMonths();        // Read months from months.txt
+        dayList = readDays();            // Read days from days.txt
+        yearList = readYears();          // Read years from years.txt
+        priorityList = readPriorities(); // Read priorities from priority.txt
     }
 
-    // Getter and Setter methods for priority list
+    // Getter and Setter methods for each component
+
+    public String getTitle(int i) {
+        return titlesList.get(i);
+    }
+
+    public void setTitle(int i, String title) {
+        titlesList.set(i, title);
+    }
+
     public boolean getPriority(int i) {
         return priorityList.get(i);
     }
@@ -92,15 +107,21 @@ public class NotesBuilder {
     }
 
     /**
-     * returns the note at index i in a formatted way
+     * returns the formatted note at index i
      * @param i - index
      * @return - formatted note
      */
     public String getFormattedNote(int i) {
-        return (notesList.get(i) + " - " + monthList.get(i) + " " + dayList.get(i) + ", " + yearList.get(i) + " - Priority: " + (priorityList.get(i) ? "High" : "Low"));
+        return (titlesList.get(i) + ": " + notesList.get(i) + " - " +
+                monthList.get(i) + " " + dayList.get(i) + ", " + yearList.get(i) +
+                " - Priority: " + (priorityList.get(i) ? "High" : "Low"));
     }
 
-    // Reading Methods
+    // Internal read methods
+
+    private ArrayList<String> readTitles() {
+        return readFromFile("titles.txt");
+    }
 
     private ArrayList<String> readNotes() {
         return readFromFile("notes.txt");
@@ -146,7 +167,11 @@ public class NotesBuilder {
         return list;
     }
 
-    // Write Methods
+    // Internal write methods
+
+    private void writeTitles(ArrayList<String> list) {
+        writeToFile("titles.txt", list);
+    }
 
     private void writeNotes(ArrayList<String> list) {
         writeToFile("notes.txt", list);
@@ -188,75 +213,118 @@ public class NotesBuilder {
         }
     }
 
-    // Method to write all lists to files
+    /**
+     * Write all lists to their respective files
+     */
     public void write() {
+        writeTitles(titlesList);
         writeNotes(notesList);
         writeMonths(monthList);
         writeDays(dayList);
         writeYears(yearList);
-        writePriorities(priorityList);  // Add priority writing
+        writePriorities(priorityList);
     }
 
-    // Add, Edit, Remove Notes Methods
-
-    public void addNote(String note, int month, int day, int year, boolean priority) {
+    /**
+     * Add a note to all lists
+     * @param title - note title
+     * @param note - note content
+     * @param month - month number (1-12)
+     * @param day - day number
+     * @param year - year number
+     * @param priority - true if high priority
+     */
+    public void addNote(String title, String note, int month, int day, int year, boolean priority) {
+        titlesList.add(title);
         notesList.add(note);
         monthList.add(String.valueOf(Math.min(month, 12)));
         dayList.add(String.valueOf(day));
         yearList.add(String.valueOf(year));
-        priorityList.add(priority);  // Add priority
+        priorityList.add(priority);
     }
 
-    public boolean editNote(int index, String note, int month, int day, int year, boolean priority) {
+    /**
+     * Edit a note at a specific index
+     * @param index - index of the note
+     * @param title - new title
+     * @param note - new content
+     * @param month - new month
+     * @param day - new day
+     * @param year - new year
+     * @param priority - new priority
+     * @return true if successful
+     */
+    public boolean editNote(int index, String title, String note, int month, int day, int year, boolean priority) {
         if (notesList.size() > index) {
+            titlesList.set(index, title);
             notesList.set(index, note);
             monthList.set(index, months[Math.min(month, 12) - 1]);
             dayList.set(index, String.valueOf(day));
             yearList.set(index, String.valueOf(year));
-            priorityList.set(index, priority);  // Edit priority
+            priorityList.set(index, priority);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Remove a note at a specific index
+     * @param index - index of note to remove
+     * @return true if successful
+     */
     public boolean removeNote(int index) {
         if (index != -1) {
+            titlesList.remove(index);
             notesList.remove(index);
             monthList.remove(index);
             dayList.remove(index);
             yearList.remove(index);
-            priorityList.remove(index);  // Remove priority
+            priorityList.remove(index);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Clear all notes
+     */
     public void clear() {
+        titlesList.clear();
         notesList.clear();
         monthList.clear();
         dayList.clear();
         yearList.clear();
-        priorityList.clear();  // Clear priority list
+        priorityList.clear();
     }
 
+    /**
+     * Print all notes to the console in a formatted way
+     */
     public void printNotes() {
         System.out.println("Current Notes: ");
         if (!notesList.isEmpty()) {
             for (int i = 0; i < notesList.size(); i++) {
-                System.out.println(notesList.get(i) + " - " + monthList.get(i) + " " + dayList.get(i) + ", " + yearList.get(i) + " - Priority: " + (priorityList.get(i) ? "High" : "Low"));
+                System.out.println(titlesList.get(i) + ": " + notesList.get(i) + " - " +
+                        monthList.get(i) + " " + dayList.get(i) + ", " +
+                        yearList.get(i) + " - Priority: " +
+                        (priorityList.get(i) ? "High" : "Low"));
             }
         }
         System.out.println();
     }
 
+    /**
+     * Read all lists from files
+     */
     public void read() {
+        titlesList = readTitles();
         notesList = readNotes();
         monthList = readMonths();
         dayList = readDays();
         yearList = readYears();
-        priorityList = readPriorities();  // Add priority reading
+        priorityList = readPriorities();
     }
 
 }

@@ -34,6 +34,9 @@ public class NotesBuilderTest {
             command = in.nextLine();
             if (command.equals(UtilityValues.ADD_COMMAND)) {
 
+                System.out.print("Enter title: ");
+                String title = in.nextLine();
+
                 System.out.print("Enter note: ");
                 note = in.nextLine();
 
@@ -50,7 +53,7 @@ public class NotesBuilderTest {
                 System.out.println("Enter Priority: ");
                 boolean priority = in.nextBoolean();
 
-                notesBuilder.addNote(note, month, day, year, priority);
+                notesBuilder.addNote(title, note, month, day, year, priority);
 
             } else if (command.equals(UtilityValues.REMOVE_COMMAND)) {
 
@@ -66,6 +69,10 @@ public class NotesBuilderTest {
             } else if (command.equals(UtilityValues.RESET_COMMAND)) {
                 notesBuilder.clear();
             } else if (command.equals(UtilityValues.EDIT_COMMAND)) {
+
+                System.out.println("Enter title: ");
+                String title = in.nextLine();
+
                 System.out.print("Enter note: ");
                 note = in.nextLine();
 
@@ -86,7 +93,7 @@ public class NotesBuilderTest {
                 System.out.println("Enter priority: ");
                 boolean priority = in.nextBoolean();
 
-                notesBuilder.editNote(index, note, month, day, year, priority);
+                notesBuilder.editNote(index, title, note, month, day, year, priority);
             } else {
                 System.out.println("Invalid Command");
             }
