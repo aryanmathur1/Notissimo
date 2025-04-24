@@ -59,8 +59,14 @@ public class TaskAlert {
             int currentMonth = currentDate.get(Calendar.MONTH); // 0-indexed
             int currentDay = currentDate.get(Calendar.DAY_OF_MONTH);
 
+            int taskMonthGetIndex = Integer.parseInt(notesBuilder.getMonth(i));
+
             // Compare year, month, and day individually
-            if (taskYear >= currentYear || taskMonth >= currentMonth || taskDay >= currentDay) {
+            boolean canShowIt = taskYear > currentYear;
+            canShowIt = canShowIt || (taskYear == currentYear && taskMonthGetIndex > currentMonth);
+            canShowIt = canShowIt || (taskYear == currentYear && taskMonthGetIndex == currentMonth && taskDay > currentDay);
+
+            if (canShowIt) {
 
                 tasks.add(task);
                 months.add(month);
