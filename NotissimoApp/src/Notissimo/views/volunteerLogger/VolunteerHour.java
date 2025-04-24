@@ -3,37 +3,42 @@ package Notissimo.views.volunteerLogger;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class VolunteerHour {
 
     private ArrayList<String> names;
+    private ArrayList<String> dates;
     private ArrayList<Double> hours;
 
     public VolunteerHour() {
         names = readNames();
+        dates = readDates();
         hours = readHours();
     }
 
-    public void addEntry(String name, double hours) {
+    public void addEntry(String name, String date, double hours) {
         this.names.add(name);
+        this.dates.add(date);
         this.hours.add(hours);
     }
 
-    public void insertEntry(int index, String name, double hour) {
+    public void insertEntry(int index, String name, String date, double hour) {
         this.names.set(index, name);
+        this.dates.set(index, date);
         this.hours.add(index, hour);
     }
 
     public void deleteEntry(int index) {
         this.names.remove(index);
+        this.dates.remove(index);
         this.hours.remove(index);
     }
 
     public void write() {
         writeNames();
+        writeDates();
         writeHours();
         writeTotalHours();
     }
@@ -42,27 +47,34 @@ public class VolunteerHour {
         return names.get(i);
     }
 
+    public String getDate(int i) {
+        return dates.get(i);
+    }
+
     public double getHour(int i) {
         return hours.get(i);
     }
 
     public double getTotalHours() {
         double total = 0;
-
         for (double hour : hours) {
             total += hour;
         }
-
         return total;
     }
 
     public void clear() {
         names.clear();
+        dates.clear();
         hours.clear();
     }
 
     public ArrayList<String> getNames() {
         return names;
+    }
+
+    public ArrayList<String> getDates() {
+        return dates;
     }
 
     public ArrayList<Double> getHours() {
@@ -73,6 +85,10 @@ public class VolunteerHour {
         return readFromFile("activitynames.txt");
     }
 
+    private ArrayList<String> readDates() {
+        return readFromFile("activitydates.txt");
+    }
+
     private ArrayList<Double> readHours() {
         return convertStringToDoubleList(readFromFile("individualhours.txt"));
     }
@@ -81,33 +97,30 @@ public class VolunteerHour {
         writeToFile("activitynames.txt", names);
     }
 
+    private void writeDates() {
+        writeToFile("activitydates.txt", dates);
+    }
+
     private void writeHours() {
         writeToFile("individualhours.txt", convertDoubleToStringList(hours));
     }
 
     public void writeTotalHours() {
-
         ArrayList<String> totalHours = new ArrayList<>();
         totalHours.add(getTotalHours() + "");
-
         writeToFile("totalhours.txt", totalHours);
     }
 
     public static ArrayList<Double> convertStringToDoubleList(ArrayList<String> stringList) {
         ArrayList<Double> doubleList = new ArrayList<>();
-
-        // Iterate through the String ArrayList and convert each String to a Double
         for (String str : stringList) {
             try {
                 double num = Double.parseDouble(str);
                 doubleList.add(num);
             } catch (NumberFormatException e) {
-                // Handle the case where the String cannot be converted to a double
                 System.err.println("Error: Could not convert \"" + str + "\" to a double. Skipping.");
-                // You might choose to log the error, skip the problematic element, or throw an exception.
             }
         }
-
         return doubleList;
     }
 

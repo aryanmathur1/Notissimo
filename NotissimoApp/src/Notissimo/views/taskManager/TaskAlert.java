@@ -76,7 +76,7 @@ public class TaskAlert {
         //notesBuilder.printNotes(); // print to console for debugging
     }
 
-    // Custom ListCellRenderer class to add padding and filled rounded rectangles around each task item
+    // Custom ListCellRenderer class
     private class TaskListCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

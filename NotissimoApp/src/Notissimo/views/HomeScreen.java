@@ -13,15 +13,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-// Your existing HomeScreen class
-
 public class HomeScreen {
 
+    // some constants that are declared later
     private static final Color ACCENT_COLOR = new Color(0x6a00ff);
     private static Font MAIN_FONT;
     private static Font TITLE_FONT;
     private static Font BUTTON_FONT;
 
+    // the frames and panels
     private JFrame frame;
     private JTabbedPane tabbedPane;
 
@@ -38,10 +38,10 @@ public class HomeScreen {
     private Timer volunteerHoursUpdateTimer;
     private Timer taskUpdateTimer;
 
-    JPanel upcomingTasksPanel;
+    JPanel upcomingTasksPanel; // section that alerts with upcoming tasks
 
     public HomeScreen() {
-        loadFonts();
+        loadFonts(); // initiate the constants
 
         // Set minimal UI look
         UIManager.put("TabbedPane.selected", Color.WHITE);
@@ -57,14 +57,17 @@ public class HomeScreen {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
 
+        // tab view so there are multiple sections
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(BUTTON_FONT);
 
+        // create the panels
         JPanel homePanel = createHomePanel();
         taskViewPanel = new TaskManagerView();
         gpaCalculatorPanel = new GPACalculator().getPanel();
         volunteerHoursPanel = new VolunteerHourTracker().getPanel();
 
+        // tabs
         tabbedPane.addTab("Home", homePanel);
         tabbedPane.addTab("Task View", taskViewPanel);
         tabbedPane.addTab("GPA Calculator", gpaCalculatorPanel);
@@ -79,6 +82,7 @@ public class HomeScreen {
         startVolunteerHoursUpdateTimer();
     }
 
+    // just to initialize the constants
     private void loadFonts() {
 
         MAIN_FONT = new Font("Arial", Font.PLAIN, 16);
@@ -86,6 +90,7 @@ public class HomeScreen {
         TITLE_FONT = new Font("Arial", Font.BOLD, 28);
     }
 
+    // custom purple button that looks clean
     private JButton createPurpleButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(ACCENT_COLOR);
@@ -102,24 +107,26 @@ public class HomeScreen {
         return button;
     }
 
+    // the home panel
     public JPanel createHomePanel() {
         JPanel homePanel = new JPanel();
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
         homePanel.setBackground(Color.WHITE);
 
-        JLabel welcomeLabel = new JLabel("Welcome to Notissimo", SwingConstants.CENTER);
+        // title/subtitles
+        JLabel welcomeLabel = new JLabel("Notissimo", SwingConstants.CENTER);
         welcomeLabel.setFont(TITLE_FONT);
         welcomeLabel.setForeground(ACCENT_COLOR);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         welcomeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
 
-        JLabel subtitle = new JLabel("to help you best", SwingConstants.CENTER);
+        JLabel subtitle = new JLabel("the best helper app", SwingConstants.CENTER);
         subtitle.setFont(MAIN_FONT.deriveFont(14f));
         subtitle.setForeground(Color.GRAY);
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         subtitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // ==== Create and position the Refresh button above the Upcoming Tasks section ====
+        // Create and position the Refresh button above the Upcoming Tasks section
         JPanel refreshPanel = new JPanel();
         refreshPanel.setBackground(Color.WHITE);
         refreshPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Align the button to the right
@@ -132,7 +139,7 @@ public class HomeScreen {
 
         refreshPanel.add(refreshButton);
 
-        // ==== Embed the task list panel here ====
+        // task alert - upcoming tasks
         TaskAlert taskAlert = new TaskAlert(); // initializes task list from saved notes
         upcomingTasksPanel = taskAlert.getTaskListPanel();
 
@@ -148,7 +155,6 @@ public class HomeScreen {
         upcomingTasksPanel.setPreferredSize(new Dimension(600, 200));
         upcomingTasksPanel.setMaximumSize(new Dimension(600, 200));
         upcomingTasksPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // ========================================
 
         // Add the bottom section (GPA and Volunteer Hours)
         bottomSectionPanel = createBottomSectionPanel();
