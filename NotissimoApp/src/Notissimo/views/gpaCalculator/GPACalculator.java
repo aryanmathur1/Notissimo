@@ -1,9 +1,13 @@
 package Notissimo.views.gpaCalculator;
 
+import Notissimo.views.CustomElements.FancyButton;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class GPACalculator {
@@ -66,31 +70,38 @@ public class GPACalculator {
         coursePanel.setBackground(Color.WHITE);
         coursePanel.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-        // Add header row
-        JPanel headerRow = new JPanel(new GridLayout(1, 3, 10, 0));
+        // Add header row including "Name" label
+        JPanel headerRow = new JPanel(new GridLayout(1, 4, 10, 0)); // Adjust to 4 columns
         headerRow.setBackground(Color.WHITE);
         headerRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 
+        JLabel nameHeader = new JLabel("Name");
         JLabel gradeHeader = new JLabel("Grade %");
         JLabel creditHeader = new JLabel("Credits");
         JLabel typeHeader = new JLabel("Type");
+        JLabel deleteHeader = new JLabel(" ");
 
+        nameHeader.setFont(defaultFont);
         gradeHeader.setFont(defaultFont);
         creditHeader.setFont(defaultFont);
         typeHeader.setFont(defaultFont);
+        deleteHeader.setFont(defaultFont);
 
+        headerRow.add(nameHeader);  // Add Name header
         headerRow.add(gradeHeader);
         headerRow.add(creditHeader);
         headerRow.add(typeHeader);
+        headerRow.add(deleteHeader);
 
         coursePanel.add(headerRow);
     }
 
     private void addCourseFields() {
-        JPanel row = new JPanel(new GridLayout(1, 3, 10, 0));
+        JPanel row = new JPanel(new GridLayout(1, 6, 10, 0)); // Add extra space for Delete button and Course Name field
         row.setBackground(Color.WHITE);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35)); // Fixed row height
 
+        JTextField courseNameField = createRoundedTextField(10);  // Course Name field (useless, just for display)
         JTextField gradeField = createRoundedTextField(6);
         JTextField creditField = createRoundedTextField(4);
 
@@ -101,9 +112,33 @@ public class GPACalculator {
         typeDropdown.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         typeDropdown.setPreferredSize(new Dimension(100, 30));
 
+        FancyButton deleteButton = new FancyButton("Delete 🗑");
+        deleteButton.setFont(defaultFont);
+        deleteButton.setColor(new Color(250, 85, 85, 255)); // Red button for delete
+        deleteButton.setColor(new Color(250, 85, 85, 255));
+        deleteButton.setColorClick(new Color(250, 85, 85, 255));
+        deleteButton.setBorderColor(new Color(250, 85, 85, 255));
+        deleteButton.setRadius(15);
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setFocusPainted(false);
+        deleteButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        deleteButton.setPreferredSize(new Dimension(80, 30));
+        deleteButton.addActionListener(e -> {
+            // Remove the row when Delete button is clicked
+            gradeFields.remove(gradeField);
+            creditFields.remove(creditField);
+            courseTypeComboBoxes.remove(typeDropdown);
+            coursePanel.remove(row);
+            coursePanel.revalidate();
+            coursePanel.repaint();
+        });
+
+        // Add components to the row
+        row.add(courseNameField); // Add Course Name field (useless input)
         row.add(gradeField);
         row.add(creditField);
         row.add(typeDropdown);
+        row.add(deleteButton); // Add Delete button to the row
 
         gradeFields.add(gradeField);
         creditFields.add(creditField);
@@ -124,9 +159,7 @@ public class GPACalculator {
                 int credits = Integer.parseInt(creditFields.get(i).getText());
                 String type = (String) courseTypeComboBoxes.get(i).getSelectedItem();
 
-                double gpa = convertPercentageToGPA(grade);
-                gpa += getCourseBump(type);
-
+                double gpa = convertPercentageToGPA(grade) + getCourseBump(type);
                 totalWeightedPoints += gpa * credits;
                 totalCredits += credits;
             }
@@ -136,6 +169,14 @@ public class GPACalculator {
 
             // save in txt file for home screen
             String gpaLast = String.format("%.2f", finalGPA);
+
+            try (FileWriter writer = new FileWriter("lastcalculatedgpa.txt")) {
+                writer.write(gpaLast);
+                System.out.println("GPA saved successfully.");
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving the GPA.");
+                e.printStackTrace();
+            }
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Please enter valid numbers in all fields.");

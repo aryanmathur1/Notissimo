@@ -60,8 +60,7 @@ public class TaskAlert {
             int currentDay = currentDate.get(Calendar.DAY_OF_MONTH);
 
             // Compare year, month, and day individually
-            if (taskYear > currentYear || (taskYear == currentYear && taskMonth > currentMonth) ||
-                    (taskYear == currentYear && taskMonth == currentMonth && taskDay > currentDay)) {
+            if (taskYear >= currentYear || taskMonth >= currentMonth || taskDay >= currentDay) {
 
                 tasks.add(task);
                 months.add(month);
@@ -69,12 +68,12 @@ public class TaskAlert {
                 years.add(year);
 
                 // formatted to show on screen
-                String taskEntry = task + " (Due: " + monthsFormat[taskMonth] + " " + day + ", " + year + ")";
+                String taskEntry = notesBuilder.getTitle(i) + ": " + notesBuilder.getNote(i) + " (Due: " + monthsFormat[Integer.parseInt(notesBuilder.getMonth(i))-1] + " " + day + ", " + year + ") Priority: " + (notesBuilder.getPriority(i) ? "High" : "Low");
                 taskListModel.addElement(taskEntry);
             }
         }
 
-        notesBuilder.printNotes(); // print to console for debugging
+        //notesBuilder.printNotes(); // print to console for debugging
     }
 
     // Custom ListCellRenderer class to add padding and filled rounded rectangles around each task item

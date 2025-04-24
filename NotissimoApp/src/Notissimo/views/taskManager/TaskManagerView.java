@@ -21,6 +21,7 @@ public class TaskManagerView extends JPanel {
 
     private final String[] monthsFormat = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
+    private ArrayList<String> titles; // New list for titles
     private ArrayList<String> tasks;
     private ArrayList<String> days;
     private ArrayList<String> months;
@@ -29,9 +30,10 @@ public class TaskManagerView extends JPanel {
     private JList<String> taskList;
     private DefaultListModel<String> taskListModel;
     private JTextField taskField;
+    private JTextField titleField; // New title input field
     private JSpinner dateTimeSpinner;
 
-    private boolean filterHighPriority = false; // Flag to toggle filter mode
+    private boolean filterHighPriority = false;
 
     // Default Constructor
     public TaskManagerView() {
@@ -52,7 +54,8 @@ public class TaskManagerView extends JPanel {
         label.setForeground(new Color(86, 0, 255));  // Matching your UI color palette
         titlePanel.add(label);
 
-        // Initializing lists for tasks and dates
+        // Initializing lists for tasks, titles, and dates
+        titles = new ArrayList<>(); // List for titles
         tasks = new ArrayList<>();
         days = new ArrayList<>();
         months = new ArrayList<>();
@@ -68,12 +71,14 @@ public class TaskManagerView extends JPanel {
 
         // Loading tasks from NotesBuilder
         for (int i = 0; i < notesBuilder.length(); i++) {
+            String title = notesBuilder.getTitle(i); // Assuming getTitle method in NotesBuilder
             String task = notesBuilder.getNote(i);
             String month = notesBuilder.getMonth(i);
             String day = notesBuilder.getDay(i);
             String year = notesBuilder.getYear(i);
             Boolean priority = notesBuilder.getPriority(i);
 
+            titles.add(title);
             tasks.add(task);
             months.add(month);
             days.add(day);
@@ -81,12 +86,12 @@ public class TaskManagerView extends JPanel {
             priorities.add(priority);
         }
 
-        // Sorting tasks based on date: year, month, day
+        // Sorting tasks based on date
         sortTasksByDate();
 
         // Adding tasks to the task list display after sorting
         for (int i = 0; i < tasks.size(); i++) {
-            String taskEntry = tasks.get(i) + " (Due: " + monthsFormat[Integer.parseInt(months.get(i))-1] + " " + days.get(i) + ", " + years.get(i) + ") Priority: " + (priorities.get(i) ? "High" : "Low");
+            String taskEntry = titles.get(i) + ": " + tasks.get(i) + " (Due: " + monthsFormat[Integer.parseInt(months.get(i))-1] + " " + days.get(i) + ", " + years.get(i) + ") Priority: " + (priorities.get(i) ? "High" : "Low");
             taskListModel.addElement(taskEntry);
         }
 
@@ -97,7 +102,16 @@ public class TaskManagerView extends JPanel {
         inputPanel.setLayout(new FlowLayout());
         inputPanel.setBackground(new Color(86, 0, 255, 255));
 
-        taskField = new HintTextField("Enter a New Note");
+        // Title field
+        titleField = new HintTextField("Enter Title");
+        titleField.setColumns(15);
+        titleField.setForeground(Color.WHITE);
+        titleField.setFont(new Font("Arial", Font.PLAIN, 12));
+        titleField.setBackground(new Color(86, 0, 255, 255));
+        inputPanel.add(titleField);
+
+        // Task field
+        taskField = new HintTextField("Enter Description");
         taskField.setColumns(20);
         taskField.setForeground(Color.WHITE);
         taskField.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -163,27 +177,27 @@ public class TaskManagerView extends JPanel {
         topPanel.add(titlePanel, BorderLayout.WEST);
         topPanel.add(filterPanel, BorderLayout.EAST);
 
-
         // Adding components to the main panel
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
-        //add(filterPanel, BorderLayout.NORTH);
     }
 
     // Add a task to the list
     private void addTask(JComboBox<String> priorityDropdown) {
+        String titleText = titleField.getText().trim(); // Get title from titleField
         String taskText = taskField.getText().trim();
         Date dueDate = (Date) dateTimeSpinner.getValue();
 
-        if (!taskText.isEmpty()) {
+        if (!taskText.isEmpty() && !titleText.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(dueDate);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
             int month = calendar.get(Calendar.MONTH) + 1;
             int year = calendar.get(Calendar.YEAR);
-            boolean priority = priorityDropdown.getSelectedItem().equals("High"); // Get priority from dropdown
+            boolean priority = priorityDropdown.getSelectedItem().equals("High");
 
+            titles.add(titleText); // Add title to titles list
             tasks.add(taskText);
             months.add(String.valueOf(month));
             days.add(Integer.toString(day));
@@ -196,13 +210,15 @@ public class TaskManagerView extends JPanel {
             // Refresh the task list display
             updateTaskList();
 
-            notesBuilder.addNote("title", taskText, month, day, year, priority);
+            // Save task with title
+            notesBuilder.addNote(titleText, taskText, month, day, year, priority);
             notesBuilder.write();
             notesBuilder.printNotes();
 
-            taskField.setText(""); // Clear the input field
+            titleField.setText(""); // Clear title input
+            taskField.setText("");  // Clear task input
         } else {
-            JOptionPane.showMessageDialog(this, "Task cannot be empty.", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Title and task cannot be empty.", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -214,7 +230,7 @@ public class TaskManagerView extends JPanel {
             int month = Integer.parseInt(months.get(i));
             int year = Integer.parseInt(years.get(i));
             boolean priority = priorities.get(i);
-            taskEntries.add(new TaskEntry(tasks.get(i), day, month, year, priority));
+            taskEntries.add(new TaskEntry(titles.get(i), tasks.get(i), day, month, year, priority));
         }
 
         // Sort tasks based on year -> month -> day
@@ -223,12 +239,14 @@ public class TaskManagerView extends JPanel {
                 .thenComparingInt(TaskEntry::getDay));
 
         // Update task lists with the sorted tasks
+        titles.clear();
         tasks.clear();
         days.clear();
         months.clear();
         years.clear();
         priorities.clear();
         for (TaskEntry entry : taskEntries) {
+            titles.add(entry.getTitle());
             tasks.add(entry.getTask());
             days.add(String.valueOf(entry.getDay()));
             months.add(String.valueOf(entry.getMonth()));
@@ -250,7 +268,7 @@ public class TaskManagerView extends JPanel {
                 continue;
             }
 
-            String taskEntry = tasks.get(i) + " (Due: " + monthsFormat[Integer.parseInt(months.get(i))-1] + " " + days.get(i) + ", " + years.get(i) + ") Priority: " + (isHighPriority ? "High" : "Low");
+            String taskEntry = titles.get(i) + ": " + tasks.get(i) + " (Due: " + monthsFormat[Integer.parseInt(months.get(i))-1] + " " + days.get(i) + ", " + years.get(i) + ") Priority: " + (isHighPriority ? "High" : "Low");
             taskListModel.addElement(taskEntry);
         }
     }
@@ -265,6 +283,7 @@ public class TaskManagerView extends JPanel {
     private void removeTask() {
         int selectedIndex = taskList.getSelectedIndex();
         if (selectedIndex != -1) {
+            titles.remove(selectedIndex);
             tasks.remove(selectedIndex);
             days.remove(selectedIndex);
             months.remove(selectedIndex);
@@ -327,20 +346,26 @@ public class TaskManagerView extends JPanel {
         }
     }
 
-    // Helper class to represent task entries with dates
+    // Helper class to represent task entries with dates and titles
     private class TaskEntry {
+        private String title;
         private String task;
         private int day;
         private int month;
         private int year;
         private boolean priority;
 
-        public TaskEntry(String task, int day, int month, int year, boolean priority) {
+        public TaskEntry(String title, String task, int day, int month, int year, boolean priority) {
+            this.title = title;
             this.task = task;
             this.day = day;
             this.month = month;
             this.year = year;
             this.priority = priority;
+        }
+
+        public String getTitle() {
+            return title;
         }
 
         public String getTask() {

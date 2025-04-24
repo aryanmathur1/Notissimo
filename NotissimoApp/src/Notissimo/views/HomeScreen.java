@@ -1,12 +1,19 @@
 package Notissimo.views;
 
 import Notissimo.views.gpaCalculator.GPACalculator;
+import Notissimo.views.gpaCalculator.RoundedButtonUI;
 import Notissimo.views.taskManager.TaskAlert; // Keep TaskAlert
 import Notissimo.views.taskManager.TaskManagerView;
+import Notissimo.views.volunteerLogger.VolunteerHourTracker;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+// Your existing HomeScreen class
 
 public class HomeScreen {
 
@@ -26,6 +33,12 @@ public class HomeScreen {
     // Add variables for the last calculated GPA and total volunteer hours
     private JLabel gpaValue;
     private JLabel volunteerHoursValue;
+
+    private Timer gpaUpdateTimer;
+    private Timer volunteerHoursUpdateTimer;
+    private Timer taskUpdateTimer;
+
+    JPanel upcomingTasksPanel;
 
     public HomeScreen() {
         loadFonts();
@@ -50,7 +63,7 @@ public class HomeScreen {
         JPanel homePanel = createHomePanel();
         taskViewPanel = new TaskManagerView();
         gpaCalculatorPanel = new GPACalculator().getPanel();
-        volunteerHoursPanel = createPlaceholderPanel("Volunteer Hours (replace with your panel)");
+        volunteerHoursPanel = new VolunteerHourTracker().getPanel();
 
         tabbedPane.addTab("Home", homePanel);
         tabbedPane.addTab("Task View", taskViewPanel);
@@ -60,19 +73,33 @@ public class HomeScreen {
         frame.add(tabbedPane, BorderLayout.CENTER);
 
         frame.setVisible(true);
+
+        // Start the background update timers
+        startGPAUpdateTimer();
+        startVolunteerHoursUpdateTimer();
     }
 
     private void loadFonts() {
-        try {
-            MAIN_FONT = new Font("Arial", Font.PLAIN, 16);
-            BUTTON_FONT = new Font("Arial", Font.BOLD, 16);
-            TITLE_FONT = new Font("Arial", Font.BOLD, 28);
-        } catch (Exception e) {
-            System.err.println("Error loading Arial font.");
-            MAIN_FONT = new Font("Arial", Font.PLAIN, 16);
-            BUTTON_FONT = new Font("Arial", Font.BOLD, 16);
-            TITLE_FONT = new Font("Arial", Font.BOLD, 28);
-        }
+
+        MAIN_FONT = new Font("Arial", Font.PLAIN, 16);
+        BUTTON_FONT = new Font("Arial", Font.PLAIN, 16);
+        TITLE_FONT = new Font("Arial", Font.BOLD, 28);
+    }
+
+    private JButton createPurpleButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(ACCENT_COLOR);
+        button.setForeground(Color.WHITE);
+        button.setFont(BUTTON_FONT);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setContentAreaFilled(false);
+        button.setOpaque(true);
+        button.setBorder(BorderFactory.createLineBorder(ACCENT_COLOR));
+        button.setPreferredSize(new Dimension(140, 40));
+        button.setUI(new RoundedButtonUI());
+        return button;
     }
 
     public JPanel createHomePanel() {
@@ -92,9 +119,22 @@ public class HomeScreen {
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         subtitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
+        // ==== Create and position the Refresh button above the Upcoming Tasks section ====
+        JPanel refreshPanel = new JPanel();
+        refreshPanel.setBackground(Color.WHITE);
+        refreshPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Align the button to the right
+        JButton refreshButton = createPurpleButton("Refresh");
+        refreshButton.addActionListener(e -> {
+            // Refresh the home panel by re-creating it
+            JPanel refreshedHomePanel = createHomePanel();
+            tabbedPane.setComponentAt(0, refreshedHomePanel); // Set the refreshed home panel
+        });
+
+        refreshPanel.add(refreshButton);
+
         // ==== Embed the task list panel here ====
         TaskAlert taskAlert = new TaskAlert(); // initializes task list from saved notes
-        JPanel upcomingTasksPanel = taskAlert.getTaskListPanel();
+        upcomingTasksPanel = taskAlert.getTaskListPanel();
 
         // Add border for the "Upcoming Tasks" section
         upcomingTasksPanel.setBorder(BorderFactory.createTitledBorder(
@@ -116,6 +156,7 @@ public class HomeScreen {
         homePanel.add(welcomeLabel);
         homePanel.add(subtitle);
         homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        homePanel.add(refreshPanel); // Add the Refresh button above the task list
         homePanel.add(upcomingTasksPanel);
         homePanel.add(Box.createRigidArea(new Dimension(0, 30)));
         homePanel.add(bottomSectionPanel);  // Add the bottom section here
@@ -140,7 +181,7 @@ public class HomeScreen {
         gpaLabelText.setFont(MAIN_FONT);
         gpaLabelText.setForeground(Color.GRAY);
 
-        gpaValue = new JLabel("4.0", SwingConstants.CENTER);  // Placeholder for GPA
+        gpaValue = new JLabel("--", SwingConstants.CENTER);  // Placeholder for GPA
         gpaValue.setFont(new Font("Arial", Font.BOLD, 40));  // Huge font size for number
         gpaValue.setForeground(ACCENT_COLOR);
 
@@ -158,7 +199,7 @@ public class HomeScreen {
         volunteerHoursLabelText.setFont(MAIN_FONT);
         volunteerHoursLabelText.setForeground(Color.GRAY);
 
-        volunteerHoursValue = new JLabel("50", SwingConstants.CENTER);  // Placeholder for volunteer hours
+        volunteerHoursValue = new JLabel("--", SwingConstants.CENTER);  // Placeholder for volunteer hours
         volunteerHoursValue.setFont(new Font("Arial", Font.BOLD, 40));  // Huge font size for number
         volunteerHoursValue.setForeground(ACCENT_COLOR);
 
@@ -174,25 +215,37 @@ public class HomeScreen {
         return bottomPanel;
     }
 
-    private JButton styledButton(String text) {
-        JButton button = new JButton(text);
-        button.setFocusPainted(false);
-        button.setFont(BUTTON_FONT);
-        button.setBackground(ACCENT_COLOR);
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return button;
+    private void startGPAUpdateTimer() {
+        int delay = 1000; // milliseconds (update every 1 second)
+        gpaUpdateTimer = new Timer(delay, e -> updateGPAValue());
+        gpaUpdateTimer.start();
     }
 
-    private JPanel createPlaceholderPanel(String labelText) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        panel.setLayout(new GridBagLayout());
-        JLabel label = new JLabel(labelText);
-        label.setFont(MAIN_FONT);
-        label.setForeground(Color.GRAY);
-        panel.add(label);
-        return panel;
+    private void startVolunteerHoursUpdateTimer() {
+        int delay = 1000; // milliseconds (update every 1 second)
+        volunteerHoursUpdateTimer = new Timer(delay, e -> updateVolunteerHoursValue());
+        volunteerHoursUpdateTimer.start();
+    }
+
+    private void updateGPAValue() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("lastcalculatedgpa.txt"))) {
+            String latestGPA = reader.readLine();
+            if (latestGPA != null && !latestGPA.equals(gpaValue.getText())) {
+                SwingUtilities.invokeLater(() -> gpaValue.setText(latestGPA));
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to update GPA from file.");
+        }
+    }
+
+    private void updateVolunteerHoursValue() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("totalhours.txt"))) {
+            String latestVolunteerHours = reader.readLine();
+            if (latestVolunteerHours != null && !latestVolunteerHours.equals(volunteerHoursValue.getText())) {
+                SwingUtilities.invokeLater(() -> volunteerHoursValue.setText(latestVolunteerHours));
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to update Volunteer Hours from file.");
+        }
     }
 }
